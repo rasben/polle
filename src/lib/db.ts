@@ -1,5 +1,6 @@
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
+import path from 'path';
 
 export interface PollData {
 	total_votes: number;
@@ -13,13 +14,18 @@ export interface VoteData {
 }
 
 function getFileName(id: string): string {
+	const dataDir = path.join(process.cwd(), `data/${id}`);
+	console.error(`dataDir: ${dataDir}`)
+
+	mkdir(dataDir, { recursive: true }).catch(console.error);
+
 	const today = new Date();
 	const year = today.getFullYear();
 	const month = String(today.getMonth() + 1).padStart(2, '0');
 	const day = String(today.getDate()).padStart(2, '0');
 	const dateID = `${year}-${month}-${day}`;
 
-	return `data/${id}/${dateID}.json`;
+	return `${dataDir}/${dateID}.json`;
 }
 
 export async function getPollData(id: string) {
@@ -37,7 +43,10 @@ export async function getPollData(id: string) {
 			average_rating: 0
 		};
 
+		console.error(data);
+		console.error('pre write');
 		await writeFile(fileName, JSON.stringify(data));
+		console.error('post write');
 	}
 
 	return data as PollData;
@@ -46,6 +55,7 @@ export async function getPollData(id: string) {
 
 export async function updatePollData(voteData: VoteData) {
 	const fileName = getFileName(voteData.pollID);
+	console.error(fileName);
 
 	const pollData = await getPollData(voteData.pollID);
 
