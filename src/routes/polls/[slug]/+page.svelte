@@ -13,11 +13,13 @@
 	}
 
 	onMount(async () => {
+		/*
 		pollData = await getPollDataWeb(data.slug);
 
 		setInterval(async () => {
 			pollData = await getPollDataWeb(data.slug);
 		}, 5000);
+		*/
 	});
 
 	let loading = false;
